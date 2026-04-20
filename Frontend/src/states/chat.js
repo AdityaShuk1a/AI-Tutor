@@ -4,7 +4,7 @@ export const sendMessage = createAsyncThunk(
   "chat/sendMessage",
   async (text, { rejectWithValue }) => {
     return new Promise((resolve, reject) => {
-      const url = `http://localhost:5000/api/chat/stream?text=${encodeURIComponent(text)}`;
+      const url = `https://ai-tutor-77xo.onrender.com/api/chat/stream?text=${encodeURIComponent(text)}`;
       const es = new EventSource(url);
 
       es.onmessage = (event) => {
