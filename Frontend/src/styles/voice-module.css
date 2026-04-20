@@ -1,11 +1,12 @@
 .voice-footer {
   width: 100%;
-  padding: 20px 0 40px 0; /* Extra bottom padding for mobile safe zones */
+  padding: 20px 0 40px 0; 
   background: linear-gradient(to top, #ffffff 80%, rgba(255,255,255,0));
   display: flex;
   justify-content: center;
   position: fixed;
   bottom: 0;
+  max-width: 1280px;
 }
 
 .input-container {
@@ -18,15 +19,14 @@
   display: flex;
   align-items: center;
   background: #ffffff;
-  border: 2px solid #e5e7eb;
-  border-radius: 50px;
+  border: 2px solid black;
   padding: 8px 8px 8px 24px;
   transition: all 0.3s ease;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .input-row:focus-within {
-  border-color: #0070f3;
+  border-color: gray;
   box-shadow: 0 10px 20px -3px rgba(0, 112, 243, 0.2);
 }
 
@@ -45,7 +45,7 @@
   height: 50px;
   border-radius: 50%;
   border: none;
-  background: #0070f3;
+  background: gray;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -56,7 +56,7 @@
 
 .mic-trigger:hover {
   transform: scale(1.05);
-  background: #0061d1;
+  background: black;
 }
 
 .mic-icon {
@@ -66,9 +66,8 @@
   z-index: 2;
 }
 
-/* Listening State & Pulse Animation */
 .mic-trigger.listening {
-  background: #ef4444; /* Red when active */
+  background: #ef4444; 
 }
 
 .pulse-ring {
@@ -90,7 +89,6 @@
   100% { transform: scale(1.8); opacity: 0; }
 }
 
-/* Mobile Adjustments */
 @media (max-width: 640px) {
   .input-row {
     padding: 6px 6px 6px 18px;

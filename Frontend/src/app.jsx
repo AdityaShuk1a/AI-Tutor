@@ -1,16 +1,13 @@
-import { useState } from 'preact/hooks'
-import preactLogo from './assets/preact.svg'
-import viteLogo from './assets/vite.svg'
-import { Tutor } from './pages/Tutor.jsx'
-import heroImg from './assets/hero.png'
-import './app.css'
+import './app.css';
+import React from 'react'; 
+import { Tutor } from './pages/Tutor.jsx';
 
-export function App() {
-  const [count, setCount] = useState(0)
-
+const App = () => {
   return (
     <>
       <Tutor />
     </>
-  )
-}
+  );
+};
+
+export default App; 

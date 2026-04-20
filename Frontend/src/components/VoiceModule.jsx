@@ -1,34 +1,106 @@
-import React, { useState } from 'react';
-import '../styles/voice-module.css';
+import "../styles/voice-module.css";
+import { sendMessage } from "../states/chat";
+import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useEffect, useRef } from "react";
 
-const VoiceModule = ({ onSend }) => {
+const VoiceModule = () => {
   const [inputText, setInputText] = useState("");
   const [isListening, setIsListening] = useState(false);
 
-  // Simulation of the Mic Toggle
+  const dispatch = useDispatch();
+  const { status } = useSelector((state) => state.chat);
+
+  const recognitionRef = useRef(null);
+
+  useEffect(() => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = true;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = "en-US";
+
+      recognitionRef.current.onresult = (event) => {
+        let transcript = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        setInputText(transcript);
+      };
+
+      recognitionRef.current.onerror = (event) => {
+        console.error("Speech error:", event.error);
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
+  }, []);
+
+  const handleFinalSubmission = (text) => {
+    if (text.trim() && status !== "loading") {
+      dispatch(sendMessage(text));
+      setInputText("");
+    }
+  };
+
   const toggleMic = () => {
-    setIsListening(!isListening);
-    // In the future, you'll trigger the Web Speech API here
+    if (!recognitionRef.current) return;
+
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+      handleFinalSubmission(inputText);
+    } else {
+      setInputText("");
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  };
+
+  const handleInputChange = (e) => setInputText(e.target.value);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && inputText.trim()) {
+      if (isListening) {
+        recognitionRef.current.stop();
+        setIsListening(false);
+      }
+      handleFinalSubmission(inputText);
+    }
   };
 
   return (
     <footer className="voice-footer">
       <div className="input-container">
-        {/* The text field that shows what the user is saying */}
-        <div className="input-row">
-          <input 
-            type="text" 
+        <div
+          className={`input-row ${status === "loading" ? "row-disabled" : ""}`}
+        >
+          <input
+            type="text"
             className="voice-to-text-input"
-            placeholder="Talk to your tutor..."
+            placeholder={
+              status === "loading"
+                ? "Tutor is thinking..."
+                : isListening
+                  ? "Listening..."
+                  : "Talk to your tutor..."
+            }
             value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onChange={handleInputChange}
+            disabled={status === "loading"}
           />
-          
-          {/* Professional Mic Button */}
-          <button 
-            className={`mic-trigger ${isListening ? 'listening' : ''}`}
+
+          <button
             onClick={toggleMic}
+            disabled={status === "loading"}
             aria-label="Activate Microphone"
+            className={`mic-trigger ${isListening ? "listening" : ""}`}
           >
             <div className="pulse-ring"></div>
             <svg viewBox="0 0 24 24" className="mic-icon">
